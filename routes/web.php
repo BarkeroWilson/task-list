@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 use App\Models\Task;
 use Termwind\Components\Dd;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\TaskRequest;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,19 +28,50 @@ Route::get('/', function(){
 
 Route::get('/tasks', function () {
     return view('index', [
-        'tasks' => Task::latest()-> where('completed', true)->get()
+        'tasks' => Task::latest()->get()
     ]);
 })->name('tasks.index');
 
-Route::get('/tasks/{id}', function ($id) {
 
-    return view('show', ['task' => Task::findOrFail($id)]);
+//EDIT THE FORM
+Route::get('/tasks/{task}/edit', function (Task $task) {
+
+    return view('edit', [
+        'task' => $task
+    ]);
+})->name('tasks.edit');
+
+
+//SHOWING FROM THE DATABASE
+Route::get('/tasks/{task}', function (Task $task) {
+
+    return view('show',
+    ['task' => $task
+]);
 
 })->name('tasks.show');
 
 
-Route::post('/tasks', function (Request $request) {
-    dd($request->all());
+//UPDATING THE DATABASE
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
+
+    $task -> update($request -> validated());
+
+    return redirect()->route('tasks.show', ['task' => $task->id])
+        -> with('success', 'Task Updated Successfullyy!');
+
+})->name('tasks.update');
+
+
+
+//  ADDING TO THE DATABASE
+Route::post('/tasks', function (TaskRequest $request) {
+
+    $task =Task::create($request->validated());
+
+    return redirect()->route('tasks.show', ['task' => $task->id])
+        -> with('success', 'Task Created Successfullyy!');
+
 })->name('tasks.store');
 
 

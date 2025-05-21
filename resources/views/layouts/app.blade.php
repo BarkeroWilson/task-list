@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Laravel 10 Task List App</title>
+    @yield('styles')
 </head>
 <body>
 
@@ -12,6 +13,9 @@
     </h1>
 
     <div>
+        @if (session()->has('success'))
+            <div>{{ session('success')}}</div>
+        @endif
         <b>
         @yield('content')
         </b>
